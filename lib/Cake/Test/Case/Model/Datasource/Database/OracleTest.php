@@ -109,7 +109,7 @@ class OracleTestDb extends Oracle {
  *
  * @package       Cake.Test.Case.Model.Datasource.Database
  */
-class OracleTestModel extends Model {
+class OracleTestModel extends CakeTestModel {
 
 /**
  * name property
@@ -181,7 +181,7 @@ class OracleTestModel extends Model {
  *
  * @package       Cake.Test.Case.Model.Datasource.Database
  */
-class OracleClientTestModel extends Model {
+class OracleClientTestModel extends CakeTestModel {
 /**
  * name property
  *
@@ -262,16 +262,16 @@ class OracleTest extends CakeTestCase {
  */
 	public function testConnect() {
 		$config = $this->db->config;
-		$old_pw = $this->db->config['password'];
+		$originalPassword = $this->db->config['password'];
 		$this->db->config['password'] = 'keepmeout';
 		try {
 			$this->db->connect();
+			$this->db->config['password'] = $originalPassword;
 			$this->fail();
-		} catch (PDOException $pdoe) {
-			$r = '/ORA-01017: invalid username\/password; logon denied/';
-			$this->assertPattern($r, $pdoe->getMessage());
+		} catch (MissingConnectionException $e) {
+			$this->assertPattern('/ORA-01017: invalid username\/password; logon denied/', $e->getMessage());
 		}
-		$this->db->config['password'] = $old_pw;
+		$this->db->config['password'] = $originalPassword;
 		$this->assertTrue($this->db->connect());
 	}
 

@@ -29,7 +29,7 @@ App::uses('DboSource', 'Model/Datasource');
 class Oracle extends DboSource {
 
 /**
- * Magic column name used to provide pagination support for SQLServer 2008
+ * Magic column name used to provide pagination support for Oracle
  * which lacks proper limit/offset support.
  */
 	const ROW_COUNTER = '_cake_page_rownum_';
@@ -112,14 +112,6 @@ class Oracle extends DboSource {
 	);
 
 /**
- * The version of SQLServer being used.  If greater than 11
- * Normal limit offset statements will be used
- *
- * @var string
- */
-	protected $_version;
-
-/**
  * Connects to the database using options in the given configuration array.
  *
  * @return boolean True if the database could be connected, else false
@@ -132,25 +124,25 @@ class Oracle extends DboSource {
 			$host .= ':' . $config['port'];
 		}
 		$dbname = $config['database'];
-		$charset = !empty($config['encoding']) ? $config['encoding'] : '';
+		$charset = !empty($config['encoding']) ? ";charset={$config['encoding']}" : '';
 		$flags = array(PDO::ATTR_PERSISTENT => $config['persistent']);
 
 		try {
 			$this->_connection = new PDO(
-				"oci:host={$host};dbname={$dbname};charset={$charset}",
+				"oci:host={$host};dbname={$dbname}{$charset}",
 				$config['login'],
 				$config['password'],
 				$flags
 			);
 
 			if (!empty($config['nls_sort'])) {
-				$this->execute("ALTER SESSION SET NLS_SORT={$config['nls_sort']}");
+				$this->_execute("ALTER SESSION SET NLS_SORT={$config['nls_sort']}");
 			}
 
 			if (!empty($config['nls_comp'])) {
-				$this->execute("ALTER SESSION SET NLS_COMP={$config['nls_comp']}");
+				$this->_execute("ALTER SESSION SET NLS_COMP={$config['nls_comp']}");
 			}
-			$this->execute("ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'");
+			$this->_execute("ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'");
 			$this->connected = true;
 		} catch (PDOException $e) {
 			throw new MissingConnectionException(array('class' => $e->getMessage()));
