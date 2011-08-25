@@ -455,7 +455,7 @@ class DboSource extends DataSource {
  * query returning no rows, suchs as a CREATE statement, false otherwise
  */
 	protected function _execute($sql, $params = array(), $prepareOptions = array()) {
-		$sql = trim($sql);
+		$sql = trim($sql, "\r\n\t; ");
 		if (preg_match('/^(?:CREATE|ALTER|DROP)/i', $sql)) {
 			$statements = array_filter(explode(';', $sql));
 			if (count($statements) > 1) {

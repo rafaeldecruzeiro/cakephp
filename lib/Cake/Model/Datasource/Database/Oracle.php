@@ -46,14 +46,21 @@ class Oracle extends DboSource {
 *
 * @var string
 */
-	public $startQuote = "";
+	public $startQuote = '"';
 
 /**
  * Ending quote character for quoted identifiers
  *
  * @var string
  */
-	public $endQuote = "";
+	public $endQuote = '"';
+
+/**
+ * Alias
+ *
+ * @var string
+ */
+	public $alias = '';
 
 /**
  * Creates a map between field aliases and numeric indexes.  Workaround for the
@@ -87,7 +94,7 @@ class Oracle extends DboSource {
 	public $columns = array(
 		'primary_key' => array('name' => ''),
 		'string' => array('name' => 'varchar2', 'limit' => '255'),
-		'text' => array('name' => 'varchar2'),
+		'text' => array('name' => 'clob'),
 		'integer' => array('name' => 'number'),
 		'float' => array('name' => 'float'),
 		'datetime' => array('name' => 'date', 'format' => 'Y-m-d H:i:s'),
@@ -95,7 +102,7 @@ class Oracle extends DboSource {
 		'time' => array('name' => 'date', 'format' => 'Y-m-d H:i:s'),
 		'date' => array('name' => 'date', 'format' => 'Y-m-d H:i:s'),
 		'binary' => array('name' => 'bytea'),
-		'boolean' => array('name' => 'boolean'),
+		'boolean' => array('name' => 'number', 'limit' => '1'),
 		'number' => array('name' => 'number'),
 		'inet' => array('name' => 'inet')
 	);
@@ -502,6 +509,17 @@ class Oracle extends DboSource {
 			return false;
 		}
 		return $row[0]['VALUE'];
+	}
+
+/**
+ * Gets full table name including prefix
+ *
+ * @param mixed $model Either a Model object or a string table name.
+ * @param boolean $quote Whether you want the table name quoted.
+ * @return string Full quoted table name
+ */
+	public function fullTableName($model, $quote = true) {
+		return parent::fullTableName($model, false);
 	}
 
 }
