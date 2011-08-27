@@ -340,6 +340,36 @@ class Oracle extends DboSource {
 	}
 
 /**
+ * Builds a map of the columns contained in a result
+ *
+ * @param PDOStatement $results
+ */
+	public function resultSet($results) {
+		$this->map = array();
+		$numFields = $results->columnCount();
+		$index = 0;
+
+		while ($numFields-- > 0) {
+			$column = $results->getColumnMeta($index);
+			$name = $column['name'];
+
+			if (strpos($name, '__')) {
+				if (isset($this->_fieldMappings[$name]) && strpos($this->_fieldMappings[$name], '.')) {
+					$map = explode('.', $this->_fieldMappings[$name]);
+				} elseif (isset($this->_fieldMappings[$name])) {
+					$map = array(0, $this->_fieldMappings[$name]);
+				} else {
+					$map = array(0, $name);
+				}
+			} else {
+				$map = array(0, $name);
+			}
+			$map[] = $column['native_type'];
+			$this->map[$index++] = $map;
+		}
+	}
+
+/**
  * Builds final SQL statement
  *
  * @param string $type Query type
