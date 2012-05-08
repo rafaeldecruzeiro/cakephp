@@ -632,7 +632,7 @@ class Router {
 			$here = null;
 		}
 
-		$extension = $output = $frag = null;
+		$output = $frag = null;
 
 		if (empty($url)) {
 			$output = isset($here) ? $here : '/';
@@ -656,7 +656,7 @@ class Router {
 				unset($url['#']);
 			}
 			if (isset($url['ext'])) {
-				$extension = '.' . $url['ext'];
+				$url['_ext'] = $url['ext'];
 				unset($url['ext']);
 			}
 			if (isset($url['ssl'])) {
@@ -690,6 +690,9 @@ class Router {
 				'plugin' => $params['plugin']
 			);
 			$output = self::$_routes->match($url, $params);
+		// } elseif (is_string($url) && $url[0] !== '/') {
+			// named route.
+
 		} else {
 			// String urls.
 			if (
@@ -725,7 +728,7 @@ class Router {
 				$output = rtrim($output, '/');
 			}
 		}
-		return $output . $extension . $frag;
+		return $output . $frag;
 	}
 
 /**
