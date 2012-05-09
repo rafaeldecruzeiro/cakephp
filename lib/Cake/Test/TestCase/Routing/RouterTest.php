@@ -800,6 +800,21 @@ class RouterTest extends TestCase {
 	}
 
 /**
+ * Test that using invalid names causes exceptions.
+ *
+ * @expectedException Cake\Error\Exception
+ * @return void
+ */
+	public function testNamedRouteException() {
+		Router::connect(
+			'/users/:name',
+			array('controller' => 'users', 'action' => 'view'),
+			array('_name' => 'test')
+		);
+		$url = Router::url('junk', array('name' => 'mark'));
+	}
+
+/**
  * test that you can leave active plugin routes with plugin = null
  *
  * @return void
