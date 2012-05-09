@@ -797,6 +797,9 @@ class RouterTest extends TestCase {
 		);
 		$url = Router::url('test', array('name' => 'mark'));
 		$this->assertEquals('/users/mark', $url);
+
+		$url = Router::url('test', array('name' => 'mark', 'page' => 1, 'sort' => 'title', 'dir' => 'desc'));
+		$this->assertEquals('/users/mark?page=1&sort=title&dir=desc', $url);
 	}
 
 /**
