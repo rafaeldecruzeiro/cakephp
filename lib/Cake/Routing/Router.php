@@ -532,8 +532,7 @@ class Router {
  */
 	public static function getRequest($current = false) {
 		if ($current) {
-			$i = count(self::$_requests) - 1;
-			return isset(self::$_requests[$i]) ? self::$_requests[$i] : null;
+			return end(self::$_requests);
 		}
 		return isset(self::$_requests[0]) ? self::$_requests[0] : null;
 	}
@@ -610,13 +609,16 @@ class Router {
 		$full = false;
 		if (is_bool($options)) {
 			$full = $options;
+			$options = array();
 		}
+		$urlType = gettype($url);
 		if (
-			is_string($url) &&
+			$urlType === 'string' &&
 			strpos($url, ':') !== false &&
 			strpos($url, '/') === false
 		) {
 			$url = self::_splitName($url, $options);
+			$urlType = 'array';
 		}
 
 		$request = self::getRequest(true);
@@ -633,10 +635,9 @@ class Router {
 		}
 
 		$output = $frag = null;
-		$hasColonSlash = false;
-		$hasLeadingSlash = false;
+		$hasColonSlash = $hasLeadingSlash = false;
 
-		if (is_string($url)) {
+		if ($urlType === 'string') {
 			$hasColonSlash = strpos($url, '://') !== false;
 			$hasLeadingSlash = isset($url[0]) ? $url[0] === '/' : false;
 		}
@@ -647,7 +648,7 @@ class Router {
 				$output = FULL_BASE_URL . $output;
 			}
 			return $output;
-		} elseif (is_array($url)) {
+		} elseif ($urlType === 'array') {
 			if (isset($url['_full']) && $url['_full'] === true) {
 				$full = true;
 				unset($url['_full']);
@@ -698,7 +699,7 @@ class Router {
 			);
 			$output = self::$_routes->match($url, $params);
 		} elseif (
-			is_string($url) &&
+			$urlType === 'string' &&
 			!$hasLeadingSlash &&
 			!$hasColonSlash
 		) {
