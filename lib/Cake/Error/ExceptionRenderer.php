@@ -20,13 +20,13 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 namespace Cake\Error;
-use Cake\Routing\Router,
-	Cake\Network\Request,
-	Cake\Network\Response,
-	Cake\Core\Configure,
-	Cake\Utility\Inflector,
-	Cake\Controller\Controller,
-	Cake\Controller\ErrorController;
+use Cake\Routing\Router;
+use Cake\Network\Request;
+use Cake\Network\Response;
+use Cake\Core\Configure;
+use Cake\Utility\Inflector;
+use Cake\Controller\Controller;
+use Cake\Controller\ErrorController;;
 
 /**
  * Exception Renderer.
