@@ -814,8 +814,8 @@ class ViewTest extends TestCase {
 		$View = new View($this->PostsController);
 
 		$View->helpers = array();
-		$this->assertInstanceOf('HtmlHelper', $View->Html, 'Object type is wrong.');
-		$this->assertInstanceOf('FormHelper', $View->Form, 'Object type is wrong.');
+		$this->assertInstanceOf('Cake\View\Helper\HtmlHelper', $View->Html, 'Object type is wrong.');
+		$this->assertInstanceOf('Cake\View\Helper\FormHelper', $View->Form, 'Object type is wrong.');
 	}
 
 /**

@@ -19,6 +19,7 @@
 
 namespace Cake\Log\Engine;
 use Cake\Console\ConsoleOutput;
+use Cake\Utility\Hash;
 use Cake\Error;
 
 /**

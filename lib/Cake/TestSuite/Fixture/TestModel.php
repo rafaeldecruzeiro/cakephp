@@ -63,7 +63,7 @@ class TestModel extends Model {
 
 	public function save($data = null, $validate = true, $fieldList = array()) {
 		$db = $this->getDataSource();
-		$db->columns['datetime']['formatter'] = 'CakeTestSuiteDispatcher::date';
+		$db->columns['datetime']['formatter'] = 'Cake\TestSuite\TestSuiteDispatcher::date';
 		return parent::save($data, $validate, $fieldList);
 	}
 

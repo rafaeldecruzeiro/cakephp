@@ -18,7 +18,8 @@ use Cake\Network\Request,
 	Cake\Routing\Dispatcher,
 	Cake\Routing\Router,
 	Cake\Log\Log,
-	Cake\Utility\Set;
+	Cake\Utility\Set,
+	Cake\Utility\Hash;
 
 /**
  * Object class provides a few generic methods used in several subclasses.

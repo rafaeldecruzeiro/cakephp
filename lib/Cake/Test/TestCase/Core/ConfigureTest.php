@@ -370,7 +370,7 @@ class ConfigureTest extends TestCase {
 	}
 
 /**
- * @expectedException ConfigureException
+ * @expectedException Cake\Error\ConfigureException
  */
 	public function testDumpNoAdapter() {
 		Configure::dump(TMP . 'test.php', 'does_not_exist');

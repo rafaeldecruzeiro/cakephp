@@ -20,6 +20,7 @@ namespace Cake\Test\TestCase;
 use Cake\TestSuite\TestCase,
 	Cake\Core\App,
 	Cake\Core\Configure,
+	Cake\Log\Log,
 	Cake\Network\Response,
 	Cake\Utility\Folder;
 
@@ -601,12 +602,12 @@ class BasicsTest extends TestCase {
 		@unlink(LOGS . 'error.log');
 
 		// disable stderr output for this test
-		CakeLog::disable('stderr');
+		Log::disable('stderr');
 
 		LogError('Testing LogError() basic function');
 		LogError("Testing with\nmulti-line\nstring");
 
-		CakeLog::enable('stderr');
+		Log::enable('stderr');
 
 		$result = file_get_contents(LOGS . 'error.log');
 		$this->assertRegExp('/Error: Testing LogError\(\) basic function/', $result);

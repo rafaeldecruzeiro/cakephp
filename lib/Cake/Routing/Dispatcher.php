@@ -106,7 +106,7 @@ class Dispatcher implements EventListener {
 			if (is_string($filter['callable'])) {
 				$callable = App::classname($filter['callable'], 'Routing/Filter');
 				if (!$callable) {
-					throw new MissingDispatcherFilterException($filter['callable']);
+					throw new Error\MissingDispatcherFilterException($filter['callable']);
 				}
 				$manager->attach(new $callable);
 			} else {

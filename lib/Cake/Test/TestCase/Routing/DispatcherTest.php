@@ -1239,7 +1239,7 @@ class DispatcherTest extends TestCase {
 /**
  * Tests that attaching an inexistent class as filter will throw an exception
  *
- * @expectedException MissingDispatcherFilterException
+ * @expectedException Cake\Error\MissingDispatcherFilterException
  * @return void
  */
 	public function testDispatcherFilterSuscriberMissing() {

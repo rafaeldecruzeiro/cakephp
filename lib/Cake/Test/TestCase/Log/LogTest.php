@@ -93,7 +93,7 @@ class LogTest extends TestCase {
 	public function testValidKeyName() {
 		Log::config('valid', array('engine' => 'FileLog'));
 		$stream = Log::stream('valid');
-		$this->assertInstanceOf('FileLog', $stream);
+		$this->assertInstanceOf('Cake\Log\Engine\FileLog', $stream);
 		Log::drop('valid');
 	}
 

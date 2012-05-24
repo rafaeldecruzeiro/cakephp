@@ -48,14 +48,9 @@ class DbAcl extends Object implements AclInterface {
  */
 	public function __construct() {
 		parent::__construct();
-<<<<<<< HEAD
-		$this->Aro = ClassRegistry::init(array('class' => 'Aro', 'alias' => 'Aro'));
-		$this->Aco = ClassRegistry::init(array('class' => 'Aco', 'alias' => 'Aco'));
-=======
 		$this->Permission = ClassRegistry::init(array('class' => 'Permission', 'alias' => 'Permission'));
 		$this->Aro = $this->Permission->Aro;
 		$this->Aco = $this->Permission->Aco;
->>>>>>> cakephp/2.2
 	}
 
 /**

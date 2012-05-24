@@ -24,6 +24,7 @@ use Cake\TestSuite\TestCase,
 	Cake\Core\App,
 	Cake\Core\Configure,
 	Cake\Core\Plugin,
+	Cake\Log\Log,
 	Cake\Network\Request,
 	Cake\Error;
 
@@ -55,8 +56,8 @@ class ErrorHandlerTest extends TestCase {
 		Router::setRequestInfo($request);
 		Configure::write('debug', 2);
 
-		CakeLog::disable('stdout');
-		CakeLog::disable('stderr');
+		Log::disable('stdout');
+		Log::disable('stderr');
 	}
 
 /**
@@ -69,8 +70,8 @@ class ErrorHandlerTest extends TestCase {
 		if ($this->_restoreError) {
 			restore_error_handler();
 		}
-		CakeLog::enable('stdout');
-		CakeLog::enable('stderr');
+		Log::enable('stdout');
+		Log::enable('stderr');
 	}
 
 /**
@@ -136,7 +137,7 @@ class ErrorHandlerTest extends TestCase {
 	}
 
 /**
- * Test that errors go into CakeLog when debug = 0.
+ * Test that errors go into Cake Log when debug = 0.
  *
  * @return void
  */
@@ -162,7 +163,7 @@ class ErrorHandlerTest extends TestCase {
 	}
 
 /**
- * Test that errors going into CakeLog include traces.
+ * Test that errors going into Cake Log include traces.
  *
  * @return void
  */

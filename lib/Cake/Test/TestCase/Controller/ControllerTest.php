@@ -24,6 +24,7 @@ use Cake\TestSuite\TestCase,
 	Cake\Network\Response,
 	Cake\Utility\ClassRegistry,
 	Cake\Utility\Set,
+	Cake\Utility\Hash,
 	TestPlugin\Controller\TestPluginController;
 
 /**
@@ -478,7 +479,7 @@ class ControllerTest extends TestCase {
 
 		$result = $Controller->loadModel('Comment');
 		$this->assertTrue($result);
-		$this->assertInstanceOf('Comment', $Controller->Comment);
+		$this->assertInstanceOf('TestApp\Model\Comment', $Controller->Comment);
 		$this->assertTrue(in_array('Comment', $Controller->uses));
 
 		ClassRegistry::flush();
@@ -1260,7 +1261,7 @@ class ControllerTest extends TestCase {
 
 		$Controller = new TestController($request);
 		$Controller->constructClasses();
-		$this->assertInstanceOf('SecurityComponent', $Controller->Security);
+		$this->assertInstanceOf('Cake\Controller\Component\SecurityComponent', $Controller->Security);
 		$this->assertInstanceOf('ControllerComment', $Controller->ControllerComment);
 	}
 

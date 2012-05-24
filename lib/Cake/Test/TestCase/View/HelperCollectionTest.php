@@ -78,22 +78,22 @@ class HelperCollectionTest extends TestCase {
  */
 	public function testLazyLoad() {
 		$result = $this->Helpers->Html;
-		$this->assertInstanceOf('HtmlHelper', $result);
+		$this->assertInstanceOf('Cake\View\Helper\HtmlHelper', $result);
 
 		$result = $this->Helpers->Form;
-		$this->assertInstanceOf('FormHelper', $result);
+		$this->assertInstanceOf('Cake\View\Helper\FormHelper', $result);
 
 		App::build(array('Plugin' => array(CAKE . 'Test' . DS . 'TestApp' . DS . 'Plugin' . DS)));
 		$this->View->plugin = 'TestPlugin';
-		CakePlugin::load(array('TestPlugin'));
+		Plugin::load(array('TestPlugin'));
 		$result = $this->Helpers->OtherHelper;
-		$this->assertInstanceOf('OtherHelperHelper', $result);
+		$this->assertInstanceOf('TestPlugin\View\Helper\OtherHelperHelper', $result);
 	}
 
 /**
  * test lazy loading of helpers
  *
- * @expectedException MissingHelperException
+ * @expectedException Cake\Error\MissingHelperException
  * @return void
  */
 	public function testLazyLoadException() {

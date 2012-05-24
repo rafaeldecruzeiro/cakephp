@@ -467,7 +467,7 @@ class ShellDispatcherTest extends TestCase {
 		$Dispatcher = new TestShellDispatcher();
 		$Shell = $this->getMock('Cake\Console\Shell', array(), array(), 'MockWithoutMainShell');
 
-		$Shell = new MockWithoutMainShell();
+		$Shell = new \MockWithoutMainShell();
 		$this->mockObjects[] = $Shell;
 
 		$Shell->expects($this->once())->method('initialize');

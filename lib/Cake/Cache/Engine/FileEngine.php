@@ -20,8 +20,9 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 namespace Cake\Cache\Engine;
-use Cake\Cache\CacheEngine,
-	Cake\Error;
+use Cake\Cache\CacheEngine;
+use Cake\Utility\Inflector;
+use Cake\Error;
 
 /**
  * File Storage engine for cache.  Filestorage is the slowest cache storage
@@ -363,8 +364,8 @@ class FileEngine extends CacheEngine {
  * @return boolean success
  **/
 	public function clearGroup($group) {
-		$directoryIterator = new RecursiveDirectoryIterator($this->settings['path']);
-		$contents = new RecursiveIteratorIterator($directoryIterator, RecursiveIteratorIterator::CHILD_FIRST);
+		$directoryIterator = new \RecursiveDirectoryIterator($this->settings['path']);
+		$contents = new \RecursiveIteratorIterator($directoryIterator, \RecursiveIteratorIterator::CHILD_FIRST);
 		foreach ($contents as $object) {
 			$containsGroup = strpos($object->getPathName(), DS . $group . DS) !== false;
 			if ($object->isFile() && $containsGroup) {

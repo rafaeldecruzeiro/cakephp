@@ -28,7 +28,7 @@ namespace Cake\Model\Validator;
  * @package       Cake.Model.Validator
  * @link          http://book.cakephp.org/2.0/en/data-validation.html
  */
-class CakeValidationSet implements \ArrayAccess, \IteratorAggregate, \Countable {
+class ValidationSet implements \ArrayAccess, \IteratorAggregate, \Countable {
 
 /**
  * Holds the ValidationRule objects

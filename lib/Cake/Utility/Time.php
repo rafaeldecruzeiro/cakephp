@@ -248,15 +248,15 @@ class Time {
 	public static function convert($serverTime, $timezone) {
 		static $serverTimezone = null;
 		if (is_null($serverTimezone) || (date_default_timezone_get() !== $serverTimezone->getName())) {
-			$serverTimezone = new DateTimeZone(date_default_timezone_get());
+			$serverTimezone = new \DateTimeZone(date_default_timezone_get());
 		}
-		$serverOffset = $serverTimezone->getOffset(new DateTime('@' . $serverTime));
+		$serverOffset = $serverTimezone->getOffset(new \DateTime('@' . $serverTime));
 		$gmtTime = $serverTime - $serverOffset;
 		if (is_numeric($timezone)) {
 			$userOffset = $timezone * (60 * 60);
 		} else {
 			$timezone = self::timezone($timezone);
-			$userOffset = $timezone->getOffset(new DateTime('@' . $gmtTime));
+			$userOffset = $timezone->getOffset(new \DateTime('@' . $gmtTime));
 		}
 		$userTime = $gmtTime + $userOffset;
 		return (int)$userTime;
@@ -285,7 +285,7 @@ class Time {
 			}
 
 			if ($tz === null || $tz->getName() !== $timezone) {
-				$tz = new DateTimeZone($timezone);
+				$tz = new \DateTimeZone($timezone);
 			}
 		}
 
@@ -317,8 +317,8 @@ class Time {
 
 		if (is_integer($dateString) || is_numeric($dateString)) {
 			$date = intval($dateString);
-		} elseif (is_object($dateString) && $dateString instanceof DateTime) {
-			$dateString->setTimezone(new DateTimeZone(date_default_timezone_get()));
+		} elseif (is_object($dateString) && $dateString instanceof \DateTime) {
+			$dateString->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 			$date = (int)$dateString->format('U') + $dateString->getOffset();
 		} else {
 			$date = strtotime($dateString);
@@ -588,25 +588,25 @@ class Time {
  */
 	public static function toServer($dateString, $timezone = null, $format = 'Y-m-d H:i:s') {
 		if ($timezone === null) {
-			$timezone = new DateTimeZone('UTC');
+			$timezone = new \DateTimeZone('UTC');
 		} elseif (is_string($timezone)) {
-			$timezone = new DateTimeZone($timezone);
-		} elseif (!($timezone instanceof DateTimeZone)) {
+			$timezone = new \DateTimeZone($timezone);
+		} elseif (!($timezone instanceof \DateTimeZone)) {
 			return false;
 		}
 
-		if ($dateString instanceof DateTime) {
+		if ($dateString instanceof \DateTime) {
 			$date = $dateString;
 		} elseif (is_integer($dateString) || is_numeric($dateString)) {
 			$dateString = (int)$dateString;
 
-			$date = new DateTime('@' . $dateString);
+			$date = new \DateTime('@' . $dateString);
 			$date->setTimezone($timezone);
 		} else {
-			$date = new DateTime($dateString, $timezone);
+			$date = new \DateTime($dateString, $timezone);
 		}
 
-		$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+		$date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 		return $date->format($format);
 	}
 
@@ -639,9 +639,9 @@ class Time {
 				$userOffset = $timezone;
 			} else {
 				if (!is_object($timezone)) {
-					$timezone = new DateTimeZone($timezone);
+					$timezone = new \DateTimeZone($timezone);
 				}
-				$currentDate = new DateTime('@' . $date);
+				$currentDate = new \DateTime('@' . $date);
 				$currentDate->setTimezone($timezone);
 				$userOffset = $timezone->getOffset($currentDate) / 60 / 60;
 			}
@@ -995,12 +995,12 @@ class Time {
 			if ($regex === null) {
 				$regex = '#^((Africa|America|Antartica|Arctic|Asia|Atlantic|Australia|Europe|Indian|Pacific)/|UTC)#';
 			}
-			$identifiers = DateTimeZone::listIdentifiers();
+			$identifiers = \DateTimeZone::listIdentifiers();
 		} else {
 			if ($filter === null) {
-				$filter = DateTimeZone::ALL;
+				$filter = \DateTimeZone::ALL;
 			}
-			$identifiers = DateTimeZone::listIdentifiers($filter, $country);
+			$identifiers = \DateTimeZone::listIdentifiers($filter, $country);
 		}
 
 		if ($regex) {
