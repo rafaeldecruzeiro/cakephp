@@ -106,15 +106,15 @@ class TemplateTaskTest extends TestCase {
 		$result = $this->Task->getThemePath();
 		$this->assertEquals($defaultTheme, $result);
 
-		$this->Task->templatePaths = array('default' => $defaultTheme, 'other' => '/some/path');
+		$this->Task->templatePaths = array('other' => '/some/path', 'default' => $defaultTheme);
 		$this->Task->params['theme'] = 'other';
 		$result = $this->Task->getThemePath();
 		$this->assertEquals('/some/path', $result);
 
 		$this->Task->params = array();
 		$result = $this->Task->getThemePath();
-		$this->assertEquals($defaultTheme, $result);
-		$this->assertEquals('default', $this->Task->params['theme']);
+		$this->assertEquals('/some/path', $result);
+		$this->assertEquals('other', $this->Task->params['theme']);
 	}
 
 /**
@@ -133,7 +133,7 @@ class TemplateTaskTest extends TestCase {
 
 		$result = $this->Task->generate('classes', 'test_object', array('test' => 'foo'));
 		$expected = "I got rendered\nfoo";
-		$this->assertEquals($expected, $result);
+		$this->assertTextEquals($expected, $result);
 	}
 
 /**

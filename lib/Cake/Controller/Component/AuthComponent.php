@@ -124,7 +124,7 @@ class AuthComponent extends Component {
  * You can also use AuthComponent::ALL instead of the string 'all'
  *
  * @var mixed
- * @link http://book.cakephp.org/view/1275/authorize
+ * @link http://book.cakephp.org/2.0/en/core-libraries/components/authentication.html#authorization
  */
 	public $authorize = false;
 
@@ -370,7 +370,7 @@ class AuthComponent extends Component {
  * Each adapter will be checked in sequence, if any of them return true, then the user will
  * be authorized for the request.
  *
- * @param mixed $user The user to check the authorization of. If empty the user in the session will be used.
+ * @param array $user The user to check the authorization of. If empty the user in the session will be used.
  * @param Cake\Network\Request $request The request to authenticate for.  If empty, the current request will be used.
  * @return boolean True if $user is authorized, otherwise false
  */
@@ -435,7 +435,7 @@ class AuthComponent extends Component {
  * `$this->Auth->allow('edit', 'add');` or
  * `$this->Auth->allow();` to allow all actions
  *
- * @param mixed $action,... Controller action name or array of actions
+ * @param string|array $action,... Controller action name or array of actions
  * @return void
  * @link http://book.cakephp.org/2.0/en/core-libraries/components/authentication.html#making-actions-public
  */
@@ -460,7 +460,7 @@ class AuthComponent extends Component {
  * `$this->Auth->deny('edit', 'add');` or
  * `$this->Auth->deny();` to remove all items from the allowed list
  *
- * @param mixed $action,... Controller action name or array of actions
+ * @param string|array $action,... Controller action name or array of actions
  * @return void
  * @see AuthComponent::allow()
  * @link http://book.cakephp.org/2.0/en/core-libraries/components/authentication.html#making-actions-require-authorization
@@ -508,7 +508,7 @@ class AuthComponent extends Component {
  * the user record is written to the session key specified in AuthComponent::$sessionKey. Logging in
  * will also change the session id in order to help mitigate session replays.
  *
- * @param mixed $user Either an array of user data, or null to identify a user using the current request.
+ * @param array $user Either an array of user data, or null to identify a user using the current request.
  * @return boolean True on login success, false on failure
  * @link http://book.cakephp.org/2.0/en/core-libraries/components/authentication.html#identifying-users-and-logging-them-in
  */
@@ -609,7 +609,7 @@ class AuthComponent extends Component {
  * set the destination a user should be redirected to upon logging in.  Will fallback to
  * AuthComponent::$loginRedirect if there is no stored redirect value.
  *
- * @param mixed $url Optional URL to write as the login redirect URL.
+ * @param string|array $url Optional URL to write as the login redirect URL.
  * @return string Redirect URL
  */
 	public function redirect($url = null) {

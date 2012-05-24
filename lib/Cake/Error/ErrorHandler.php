@@ -157,7 +157,7 @@ class ErrorHandler {
 		}
 		$errorConfig = Configure::read('Error');
 		list($error, $log) = self::mapErrorCode($code);
-		if ($log === LOG_ERROR) {
+		if ($log === LOG_ERR) {
 			return self::handleFatalError($code, $description, $file, $line);
 		}
 
@@ -196,14 +196,17 @@ class ErrorHandler {
  */
 	public static function handleFatalError($code, $description, $file, $line) {
 		$logMessage = 'Fatal Error (' . $code . '): ' . $description . ' in [' . $file . ', line ' . $line . ']';
-		Log::write(LOG_ERROR, $logMessage);
+		Log::write(LOG_ERR, $logMessage);
 
 		$exceptionHandler = Configure::read('Exception.handler');
 		if (!is_callable($exceptionHandler)) {
 			return false;
 		}
 
-		ob_clean();
+		if (ob_get_level()) {
+			ob_clean();
+		}
+
 		if (Configure::read('debug')) {
 			call_user_func($exceptionHandler, new FatalErrorException($description, 500, $file, $line));
 		} else {
@@ -227,7 +230,7 @@ class ErrorHandler {
 			case E_COMPILE_ERROR:
 			case E_USER_ERROR:
 				$error = 'Fatal Error';
-				$log = LOG_ERROR;
+				$log = LOG_ERR;
 			break;
 			case E_WARNING:
 			case E_USER_WARNING:

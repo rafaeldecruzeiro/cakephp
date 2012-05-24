@@ -303,6 +303,16 @@ class RouteTest extends TestCase {
 		$result = $route->match($url);
 		$expected = '/admin/subscriptions/edit/1';
 		$this->assertEquals($expected, $result);
+
+		$url = array(
+			'controller' => 'subscribe',
+			'admin' => true,
+			'action' => 'edit_admin_e',
+			1
+		);
+		$result = $route->match($url);
+		$expected = '/admin/subscriptions/edit_admin_e/1';
+		$this->assertEquals($expected, $result);
 	}
 
 /**
@@ -863,7 +873,7 @@ class RouteTest extends TestCase {
  * @return void
  */
 	public function testParseTrailingUTF8() {
-		$route = new Route( '/category/**', array('controller' => 'categories','action' => 'index'));
+		$route = new Route('/category/**', array('controller' => 'categories','action' => 'index'));
 		$result = $route->parse('/category/%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84');
 		$expected = array(
 			'controller' => 'categories',

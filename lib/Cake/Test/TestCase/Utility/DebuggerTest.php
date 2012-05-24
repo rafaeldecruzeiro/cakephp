@@ -145,8 +145,8 @@ class DebuggerTest extends TestCase {
 			'a' => array(
 				'href' => "javascript:void(0);",
 				'onclick' => "preg:/document\.getElementById\('cakeErr[a-z0-9]+\-trace'\)\.style\.display = " .
-							 "\(document\.getElementById\('cakeErr[a-z0-9]+\-trace'\)\.style\.display == 'none'" .
-							 " \? '' \: 'none'\);/"
+					 "\(document\.getElementById\('cakeErr[a-z0-9]+\-trace'\)\.style\.display == 'none'" .
+					 " \? '' \: 'none'\);/"
 			),
 			'b' => array(), 'Notice', '/b', ' (8)',
 		));
@@ -154,6 +154,7 @@ class DebuggerTest extends TestCase {
 		$this->assertRegExp('/Undefined variable:\s+buzz/', $result[1]);
 		$this->assertRegExp('/<a[^>]+>Code/', $result[1]);
 		$this->assertRegExp('/<a[^>]+>Context/', $result[2]);
+		$this->assertContains('$wrong = &#039;&#039;', $result[3], 'Context should be HTML escaped.');
 	}
 
 /**
@@ -167,14 +168,14 @@ class DebuggerTest extends TestCase {
 
 		Debugger::output('js', array(
 			'traceLine' => '{:reference} - <a href="txmt://open?url=file://{:file}' .
-							 '&line={:line}">{:path}</a>, line {:line}'
+				'&line={:line}">{:path}</a>, line {:line}'
 		));
 		$result = Debugger::trace();
 		$this->assertRegExp('/' . preg_quote('txmt://open?url=file://', '/') . '(\/|[A-Z]:\\\\)' . '/', $result);
 
 		Debugger::output('xml', array(
 			'error' => '<error><code>{:code}</code><file>{:file}</file><line>{:line}</line>' .
-						 '{:description}</error>',
+				 '{:description}</error>',
 			'context' => "<context>{:context}</context>",
 			'trace' => "<stack>{:trace}</stack>",
 		));
@@ -365,10 +366,10 @@ TEXT;
 		$this->assertRegExp('/DebuggerTest\:\:testLog/i', $result);
 		$this->assertRegExp("/'cool'/", $result);
 
-		unlink(TMP . 'logs' . DS . 'debug.log');
+		unlink(LOGS . 'debug.log');
 
 		Debugger::log(array('whatever', 'here'));
-		$result = file_get_contents(TMP . 'logs' . DS . 'debug.log');
+		$result = file_get_contents(LOGS . 'debug.log');
 		$this->assertRegExp('/DebuggerTest\:\:testLog/i', $result);
 		$this->assertRegExp('/\[main\]/', $result);
 		$this->assertRegExp('/array/', $result);

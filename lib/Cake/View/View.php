@@ -297,6 +297,11 @@ class View extends Object {
 	protected $_eventManager = null;
 
 /**
+ * The view file to be rendered, only used inside _execute()
+ */
+	private $__viewFileName = null;
+
+/**
  * Whether the event manager was already configured for this object
  *
  * @var boolean
@@ -339,8 +344,10 @@ class View extends Object {
  * @return Cake\Event\EventManager
  */
 	public function getEventManager() {
-		if (empty($this->_eventManager) || !$this->_eventManagerConfigured) {
+		if (empty($this->_eventManager)) {
 			$this->_eventManager = new EventManager();
+		}
+		if (!$this->_eventManagerConfigured) {
 			$this->_eventManager->attach($this->Helpers);
 			$this->_eventManagerConfigured = true;
 		}
@@ -564,8 +571,7 @@ class View extends Object {
 					header('Content-type: text/xml');
 				}
 				$commentLength = strlen('<!--cachetime:' . $match['1'] . '-->');
-				echo substr($out, $commentLength);
-				return true;
+				return substr($out, $commentLength);
 			}
 		}
 	}
@@ -763,8 +769,8 @@ class View extends Object {
  * Allows a template or element to set a variable that will be available in
  * a layout or other element. Analogous to Controller::set().
  *
- * @param mixed $one A string or an array of data.
- * @param mixed $two Value in case $one is a string (which then works as the key).
+ * @param string|array $one A string or an array of data.
+ * @param string|array $two Value in case $one is a string (which then works as the key).
  *    Unused if $one is an associative array, otherwise serves as the values to $one's keys.
  * @return void
  */
@@ -792,9 +798,6 @@ class View extends Object {
  * @return mixed
  */
 	public function __get($name) {
-		if (isset($this->Helpers->{$name})) {
-			return $this->Helpers->{$name};
-		}
 		switch ($name) {
 			case 'base':
 			case 'here':
@@ -807,9 +810,12 @@ class View extends Object {
 				return $this->request;
 			case 'output':
 				return $this->Blocks->get('content');
-			default:
-				return $this->{$name};
 		}
+		if (isset($this->Helpers->{$name})) {
+			$this->{$name} = $this->Helpers->{$name};
+			return $this->Helpers->{$name};
+		}
+		return $this->{$name};
 	}
 
 /**
@@ -903,17 +909,19 @@ class View extends Object {
 /**
  * Sandbox method to evaluate a template / view script in.
  *
- * @param string $___viewFn Filename of the view
+ * @param string $viewFn Filename of the view
  * @param array $___dataForView Data to include in rendered view.
  *    If empty the current View::$viewVars will be used.
  * @return string Rendered output
  */
-	protected function _evaluate($___viewFn, $___dataForView) {
-		extract($___dataForView, EXTR_SKIP);
+	protected function _evaluate($viewFile, $dataForView) {
+		$this->__viewFile = $viewFile;
+		extract($dataForView);
 		ob_start();
 
-		include $___viewFn;
+		include $this->__viewFile;
 
+		unset($this->_viewFile);
 		return ob_get_clean();
 	}
 
@@ -994,7 +1002,7 @@ class View extends Object {
  * It checks if the plugin is loaded, else filename will stay unchanged for filenames containing dot
  *
  * @param string $name The name you want to plugin split.
- * @param boolean $fallback If true uses the plugin set in the current CakeRequest when parsed plugin is not loaded
+ * @param boolean $fallback If true uses the plugin set in the current Request when parsed plugin is not loaded
  * @return array Array with 2 indexes.  0 => plugin name, 1 => filename
  */
 	public function pluginSplit($name, $fallback = true) {

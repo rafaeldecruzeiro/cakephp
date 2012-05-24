@@ -94,7 +94,7 @@ abstract class BaseAuthorize {
 /**
  * Accessor to the controller object.
  *
- * @param mixed $controller null to get, a controller to set.
+ * @param Controller $controller null to get, a controller to set.
  * @return mixed
  * @throws Cake\Error\Exception
  */
@@ -148,7 +148,7 @@ abstract class BaseAuthorize {
  * permissions lookup.  When using with DbAcl, you'll have to add additional _admin type columns
  * to the `aros_acos` table.
  *
- * @param mixed $map Either an array of mappings, or undefined to get current values.
+ * @param array $map Either an array of mappings, or undefined to get current values.
  * @return mixed Either the current mappings or null when setting.
  * @see AuthComponent::mapActions()
  */

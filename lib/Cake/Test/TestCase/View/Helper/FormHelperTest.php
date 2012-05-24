@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc.
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc.
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.View.Helper
  * @since         CakePHP(tm) v 1.2.0.4206
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -4817,82 +4817,10 @@ class FormHelperTest extends TestCase {
 		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('value' => false));
-		$expected = array(
-			array('select' => array('name' => 'data[Contact][date][day]', 'id' => 'ContactDateDay')),
-			$daysRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			'-',
-			array('select' => array('name' => 'data[Contact][date][month]', 'id' => 'ContactDateMonth')),
-			$monthsRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			'-',
-			array('select' => array('name' => 'data[Contact][date][year]', 'id' => 'ContactDateYear')),
-			$yearsRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			array('select' => array('name' => 'data[Contact][date][hour]', 'id' => 'ContactDateHour')),
-			$hoursRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			':',
-			array('select' => array('name' => 'data[Contact][date][min]', 'id' => 'ContactDateMin')),
-			$minutesRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			' ',
-			array('select' => array('name' => 'data[Contact][date][meridian]', 'id' => 'ContactDateMeridian')),
-			$meridianRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select'
-		);
 		$this->assertTags($result, $expected);
 		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('value' => ''));
-		$expected = array(
-			array('select' => array('name' => 'data[Contact][date][day]', 'id' => 'ContactDateDay')),
-			$daysRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			'-',
-			array('select' => array('name' => 'data[Contact][date][month]', 'id' => 'ContactDateMonth')),
-			$monthsRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			'-',
-			array('select' => array('name' => 'data[Contact][date][year]', 'id' => 'ContactDateYear')),
-			$yearsRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			array('select' => array('name' => 'data[Contact][date][hour]', 'id' => 'ContactDateHour')),
-			$hoursRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			':',
-			array('select' => array('name' => 'data[Contact][date][min]', 'id' => 'ContactDateMin')),
-			$minutesRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			' ',
-			array('select' => array('name' => 'data[Contact][date][meridian]', 'id' => 'ContactDateMeridian')),
-			$meridianRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select'
-		);
 		$this->assertTags($result, $expected);
 		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
@@ -4946,53 +4874,7 @@ class FormHelperTest extends TestCase {
 		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
 
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('minuteInterval' => 5, 'value' => ''));
-		$expected = array(
-			array('select' => array('name' => 'data[Contact][date][day]', 'id' => 'ContactDateDay')),
-			$daysRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			'-',
-			array('select' => array('name' => 'data[Contact][date][month]', 'id' => 'ContactDateMonth')),
-			$monthsRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			'-',
-			array('select' => array('name' => 'data[Contact][date][year]', 'id' => 'ContactDateYear')),
-			$yearsRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			array('select' => array('name' => 'data[Contact][date][hour]', 'id' => 'ContactDateHour')),
-			$hoursRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select',
-			':',
-			array('select' => array('name' => 'data[Contact][date][min]', 'id' => 'ContactDateMin')),
-			$minutesRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			array('option' => array('value' => '00')),
-			'00',
-			'/option',
-			array('option' => array('value' => '05')),
-			'05',
-			'/option',
-			array('option' => array('value' => '10')),
-			'10',
-			'/option',
-			'*/select',
-			' ',
-			array('select' => array('name' => 'data[Contact][date][meridian]', 'id' => 'ContactDateMeridian')),
-			$meridianRegex,
-			array('option' => array('value' => '')),
-			'/option',
-			'*/select'
-		);
-		$this->assertTags($result, $expected);
-		$this->assertNotRegExp('/<option[^<>]+value=""[^<>]+selected="selected"[^>]*>/', $result);
+		$result = $this->Form->dateTime('Contact.date', 'DMY', '12', array('minuteInterval' => 5, 'value' => ''));
 
 		$this->Form->request->data['Contact']['data'] = null;
 		$result = $this->Form->dateTime('Contact.date', 'DMY', '12');
@@ -8078,4 +7960,66 @@ class FormHelperTest extends TestCase {
 		);
 		$this->assertTags($result, $expected);
 	}
+
+/**
+ * Test inputDefaults setter and getter
+ *
+ * @return void
+ */
+	public function testInputDefaults() {
+		$this->Form->create('Contact');
+
+		$this->Form->inputDefaults(array(
+			'label' => false,
+			'div' => array(
+				'style' => 'color: #000;'
+			)
+		));
+		$result = $this->Form->input('Contact.field1');
+		$expected = array(
+			'div' => array('class' => 'input text', 'style' => 'color: #000;'),
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][field1]',
+				'id' => 'ContactField1'
+			),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$this->Form->inputDefaults(array(
+			'div' => false,
+			'label' => 'Label',
+		));
+		$result = $this->Form->input('Contact.field1');
+		$expected = array(
+			'label' => array('for' => 'ContactField1'),
+			'Label',
+			'/label',
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][field1]',
+				'id' => 'ContactField1'
+			),
+		);
+		$this->assertTags($result, $expected);
+
+		$this->Form->inputDefaults(array(
+			'label' => false,
+		), true);
+		$result = $this->Form->input('Contact.field1');
+		$expected = array(
+			'input' => array(
+				'type' => 'text', 'name' => 'data[Contact][field1]',
+				'id' => 'ContactField1'
+			),
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->inputDefaults();
+		$expected = array(
+			'div' => false,
+			'label' => false,
+		);
+		$this->assertEqual($result, $expected);
+	}
+
 }

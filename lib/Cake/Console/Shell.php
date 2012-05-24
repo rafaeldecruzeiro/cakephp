@@ -169,9 +169,19 @@ class Shell extends Object {
 		if ($this->stdout == null) {
 			$this->stdout = new ConsoleOutput('php://stdout');
 		}
+		Log::config('stdout', array(
+			'engine' => 'Cake\Log\Engine\ConsoleLog',
+			'types' => array('notice', 'info'),
+			'stream' => $this->stdout,
+		));
 		if ($this->stderr == null) {
 			$this->stderr = new ConsoleOutput('php://stderr');
 		}
+		Log::config('stderr', array(
+			'engine' => 'Cake\Log\Engine\ConsoleLog',
+			'types' => array('error', 'warning'),
+			'stream' => $this->stderr,
+		));
 		if ($this->stdin == null) {
 			$this->stdin = new ConsoleInput('php://stdin');
 		}
@@ -447,7 +457,7 @@ class Shell extends Object {
  * Prompts the user for input, and returns it.
  *
  * @param string $prompt Prompt text.
- * @param mixed $options Array or string of options.
+ * @param string|array $options Array or string of options.
  * @param string $default Default input value.
  * @return mixed Either the default value, or the user-provided input.
  * @link http://book.cakephp.org/2.0/en/console-and-shells.html#Shell::in
@@ -485,7 +495,7 @@ class Shell extends Object {
  * Prompts the user for input, and returns it.
  *
  * @param string $prompt Prompt text.
- * @param mixed $options Array or string of options.
+ * @param string|array $options Array or string of options.
  * @param string $default Default input value.
  * @return Either the default value, or the user-provided input.
  */
@@ -525,7 +535,7 @@ class Shell extends Object {
  * - `indent` Indent the text with the string provided. Defaults to null.
  *
  * @param string $text Text the text to format.
- * @param mixed $options Array of options to use, or an integer to wrap the text to.
+ * @param string|integer|array $options Array of options to use, or an integer to wrap the text to.
  * @return string Wrapped / indented text
  * @see String::wrap()
  * @link http://book.cakephp.org/2.0/en/console-and-shells.html#Shell::wrapText
@@ -545,7 +555,7 @@ class Shell extends Object {
  * present in  most shells.  Using Shell::QUIET for a message means it will always display.
  * While using Shell::VERBOSE means it will only display when verbose output is toggled.
  *
- * @param mixed $message A string or a an array of strings to output
+ * @param string|array $message A string or a an array of strings to output
  * @param integer $newlines Number of newlines to append
  * @param integer $level The message's output level, see above.
  * @return integer|boolean Returns the number of bytes returned from writing to stdout.
@@ -569,7 +579,7 @@ class Shell extends Object {
  * Outputs a single or multiple error messages to stderr. If no parameters
  * are passed outputs just a newline.
  *
- * @param mixed $message A string or a an array of strings to output
+ * @param string|array $message A string or a an array of strings to output
  * @param integer $newlines Number of newlines to append
  * @return void
  * @link http://book.cakephp.org/2.0/en/console-and-shells.html#Shell::err
@@ -683,12 +693,14 @@ class Shell extends Object {
  * @return boolean Success
  */
 	protected function _checkUnitTest() {
-		if (App::import('Vendor', 'phpunit', array('file' => 'PHPUnit' . DS . 'Autoload.php'))) {
+		if (class_exists('PHPUnit_Framework_TestCase')) {
+			return true;
+		} elseif (@include 'PHPUnit' . DS . 'Autoload.php') {
+			return true;
+		} elseif (App::import('Vendor', 'phpunit', array('file' => 'PHPUnit' . DS . 'Autoload.php'))) {
 			return true;
 		}
-		if (@include 'PHPUnit' . DS . 'Autoload.php') {
-			return true;
-		}
+
 		$prompt = __d('cake_console', 'PHPUnit is not installed. Do you want to bake unit test files anyway?');
 		$unitTest = $this->in($prompt, array('y', 'n'), 'y');
 		$result = strtolower($unitTest) == 'y' || strtolower($unitTest) == 'yes';

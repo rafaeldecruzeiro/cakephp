@@ -17,8 +17,8 @@
  */
 use Cake\Utility\Inflector;
 ?>
-<div class="<?php echo $pluralVar;?> view">
-<h2><?php echo "<?php  echo __('{$singularHumanName}');?>";?></h2>
+<div class="<?php echo $pluralVar; ?> view">
+<h2><?php echo "<?php  echo __('{$singularHumanName}'); ?>"; ?></h2>
 	<dl>
 <?php
 foreach ($fields as $field) {
@@ -67,20 +67,20 @@ foreach ($fields as $field) {
 if (!empty($associations['hasOne'])) :
 	foreach ($associations['hasOne'] as $alias => $details): ?>
 	<div class="related">
-		<h3><?php echo "<?php echo __('Related " . Inflector::humanize($details['controller']) . "');?>";?></h3>
-	<?php echo "<?php if (!empty(\${$singularVar}['{$alias}'])):?>\n";?>
+		<h3><?php echo "<?php echo __('Related " . Inflector::humanize($details['controller']) . "'); ?>"; ?></h3>
+	<?php echo "<?php if (!empty(\${$singularVar}['{$alias}'])): ?>\n"; ?>
 		<dl>
 	<?php
 			foreach ($details['fields'] as $field) {
-				echo "\t\t<dt><?php echo __('" . Inflector::humanize($field) . "');?></dt>\n";
-				echo "\t\t<dd>\n\t<?php echo \${$singularVar}['{$alias}']['{$field}'];?>\n&nbsp;</dd>\n";
+				echo "\t\t<dt><?php echo __('" . Inflector::humanize($field) . "'); ?></dt>\n";
+				echo "\t\t<dd>\n\t<?php echo \${$singularVar}['{$alias}']['{$field}']; ?>\n&nbsp;</dd>\n";
 			}
 	?>
 		</dl>
-	<?php echo "<?php endif; ?>\n";?>
+	<?php echo "<?php endif; ?>\n"; ?>
 		<div class="actions">
 			<ul>
-				<li><?php echo "<?php echo \$this->Html->link(__('Edit " . Inflector::humanize(Inflector::underscore($alias)) . "'), array('controller' => '{$details['controller']}', 'action' => 'edit', \${$singularVar}['{$alias}']['{$details['primaryKey']}'])); ?></li>\n";?>
+				<li><?php echo "<?php echo \$this->Html->link(__('Edit " . Inflector::humanize(Inflector::underscore($alias)) . "'), array('controller' => '{$details['controller']}', 'action' => 'edit', \${$singularVar}['{$alias}']['{$details['primaryKey']}'])); ?></li>\n"; ?>
 			</ul>
 		</div>
 	</div>
@@ -100,8 +100,8 @@ foreach ($relations as $alias => $details):
 	$otherPluralHumanName = Inflector::humanize($details['controller']);
 	?>
 <div class="related">
-	<h3><?php echo "<?php echo __('Related " . $otherPluralHumanName . "');?>";?></h3>
-	<?php echo "<?php if (!empty(\${$singularVar}['{$alias}'])):?>\n";?>
+	<h3><?php echo "<?php echo __('Related " . $otherPluralHumanName . "'); ?>"; ?></h3>
+	<?php echo "<?php if (!empty(\${$singularVar}['{$alias}'])): ?>\n"; ?>
 	<table cellpadding = "0" cellspacing = "0">
 	<tr>
 <?php
@@ -109,7 +109,7 @@ foreach ($relations as $alias => $details):
 				echo "\t\t<th><?php echo __('" . Inflector::humanize($field) . "'); ?></th>\n";
 			}
 ?>
-		<th class="actions"><?php echo "<?php echo __('Actions');?>";?></th>
+		<th class="actions"><?php echo "<?php echo __('Actions'); ?>"; ?></th>
 	</tr>
 <?php
 echo "\t<?php
@@ -117,7 +117,7 @@ echo "\t<?php
 		foreach (\${$singularVar}['{$alias}'] as \${$otherSingularVar}): ?>\n";
 		echo "\t\t<tr>\n";
 			foreach ($details['fields'] as $field) {
-				echo "\t\t\t<td><?php echo \${$otherSingularVar}['{$field}'];?></td>\n";
+				echo "\t\t\t<td><?php echo \${$otherSingularVar}['{$field}']; ?></td>\n";
 			}
 
 			echo "\t\t\t<td class=\"actions\">\n";
@@ -130,11 +130,11 @@ echo "\t<?php
 echo "\t<?php endforeach; ?>\n";
 ?>
 	</table>
-<?php echo "<?php endif; ?>\n\n";?>
+<?php echo "<?php endif; ?>\n\n"; ?>
 	<div class="actions">
 		<ul>
-			<li><?php echo "<?php echo \$this->Html->link(__('New " . Inflector::humanize(Inflector::underscore($alias)) . "'), array('controller' => '{$details['controller']}', 'action' => 'add'));?>";?> </li>
+			<li><?php echo "<?php echo \$this->Html->link(__('New " . Inflector::humanize(Inflector::underscore($alias)) . "'), array('controller' => '{$details['controller']}', 'action' => 'add')); ?>"; ?> </li>
 		</ul>
 	</div>
 </div>
-<?php endforeach;?>
+<?php endforeach; ?>

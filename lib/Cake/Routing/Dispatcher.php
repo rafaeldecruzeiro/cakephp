@@ -19,11 +19,15 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
 namespace Cake\Routing;
 use Cake\Core\Configure,
 	Cake\Core\Plugin,
 	Cake\Core\App,
 	Cake\Controller\Controller,
+	Cake\Event\Event,
+	Cake\Event\EventListener,
+	Cake\Event\EventManager,
 	Cake\Network\Request,
 	Cake\Network\Response,
 	Cake\Utility\Inflector,
@@ -37,7 +41,14 @@ use Cake\Core\Configure,
  *
  * @package       Cake.Routing
  */
-class Dispatcher {
+class Dispatcher implements EventListener {
+
+/**
+ * Event manager, used to handle dispatcher filters
+ *
+ * @var CakeEventMaanger
+ */
+	protected $_eventManager;
 
 /**
  * Constructor.
@@ -47,6 +58,65 @@ class Dispatcher {
 	public function __construct($base = false) {
 		if ($base !== false) {
 			Configure::write('App.base', $base);
+		}
+	}
+
+/**
+ * Returns the Cake\Event\EventManager instance or creates one if none was
+ * creted. Attaches the default listeners and filters
+ *
+ * @return Cake\Event\EventManager
+ */
+	public function getEventManager() {
+		if (!$this->_eventManager) {
+			$this->_eventManager = new EventManager();
+			$this->_eventManager->attach($this);
+			$this->_attachFilters($this->_eventManager);
+		}
+		return $this->_eventManager;
+	}
+
+/**
+ * Returns the list of events this object listents to.
+ *
+ * @return array
+ */
+	public function implementedEvents() {
+		return array('Dispatcher.beforeDispatch' => 'parseParams');
+	}
+
+/**
+ * Attaches all event listeners for this dispatcher instance. Loads the
+ * dispatcher filters from the configured locations.
+ *
+ * @param Cake\Event\EventManager $manager
+ * @return void
+ * @throws MissingDispatcherFilterException
+ */
+	protected function _attachFilters($manager) {
+		$filters = Configure::read('Dispatcher.filters');
+		if (empty($filters)) {
+			return;
+		}
+
+		foreach ($filters as $filter) {
+			if (is_string($filter)) {
+				$filter = array('callable' => $filter);
+			}
+			if (is_string($filter['callable'])) {
+				$callable = App::classname($filter['callable'], 'Routing/Filter');
+				if (!$callable) {
+					throw new MissingDispatcherFilterException($filter['callable']);
+				}
+				$manager->attach(new $callable);
+			} else {
+				$on = strtolower($filter['on']);
+				$options = array();
+				if (isset($filter['priority'])) {
+					$options = array('priority' => $filter['priority']);
+				}
+				$manager->attach($filter['callable'], 'Dispatcher.' . $on . 'Dispatch', $options);
+			}
 		}
 	}
 
@@ -65,16 +135,22 @@ class Dispatcher {
  * @param Cake\Network\Request $request Request object to dispatch.
  * @param Cake\Network\Response $response Response object to put the results of the dispatch into.
  * @param array $additionalParams Settings array ("bare", "return") which is melded with the GET and POST params
- * @return boolean Success
+ * @return string|void if `$request['return']` is set then it returns response body, null otherwise
  * @throws MissingControllerException When the controller is missing.
  */
 	public function dispatch(Request $request, Response $response, $additionalParams = array()) {
-		if ($this->asset($request->url, $response) || $this->cached($request->here())) {
+		$beforeEvent = new Event('Dispatcher.beforeDispatch', $this, compact('request', 'response', 'additionalParams'));
+		$this->getEventManager()->dispatch($beforeEvent);
+
+		$request = $beforeEvent->data['request'];
+		if ($beforeEvent->result instanceof Response) {
+			if (isset($request->params['return'])) {
+				return $response->body();
+			}
+			$response->send();
 			return;
 		}
 
-		Router::setRequestInfo($request);
-		$request = $this->parseParams($request, $additionalParams);
 		$controller = $this->_getController($request, $response);
 
 		if (!($controller instanceof Controller)) {
@@ -84,7 +160,14 @@ class Dispatcher {
 			));
 		}
 
-		return $this->_invoke($controller, $request, $response);
+		$response = $this->_invoke($controller, $request, $response);
+		if (isset($request->params['return'])) {
+			return $response->body();
+		}
+
+		$afterEvent = new Event('Dispatcher.afterDispatch', $this, compact('request', 'response'));
+		$this->getEventManager()->dispatch($afterEvent);
+		$afterEvent->data['response']->send();
 	}
 
 /**
@@ -95,7 +178,7 @@ class Dispatcher {
  * @param Controller $controller Controller to invoke
  * @param Cake\Network\Request $request The request object to invoke the controller for.
  * @param Cake\Network\Response $response The response object to receive the output
- * @return void
+ * @return Cake\Network\Response te resulting response object
  */
 	protected function _invoke(Controller $controller, Request $request, Response $response) {
 		$controller->constructClasses();
@@ -115,22 +198,19 @@ class Dispatcher {
 		}
 		$controller->shutdownProcess();
 
-		if (isset($request->params['return'])) {
-			return $response->body();
-		}
-		$response->send();
+		return $response;
 	}
 
 /**
  * Applies Routing and additionalParameters to the request to be dispatched.
  * If Routes have not been loaded they will be loaded, and app/Config/routes.php will be run.
  *
- * @param Cake\Network\Request $request Cake\Network\Request object to mine for parameter information.
- * @param array $additionalParams An array of additional parameters to set to the request.
- *   Useful when Object::requestAction() is involved
- * @return Cake\Network\Request The request object with routing params set.
+ * @param Cake\Event\Event $event containing the request, response and additional params
+ * @return void
  */
-	public function parseParams(Request $request, $additionalParams = array()) {
+	public function parseParams($event) {
+		$request = $event->data['request'];
+		Router::setRequestInfo($request);
 		if (count(Router::$routes) == 0) {
 			$namedExpressions = Router::getNamedExpressions();
 			extract($namedExpressions);
@@ -140,10 +220,9 @@ class Dispatcher {
 		$params = Router::parse($request->url);
 		$request->addParams($params);
 
-		if (!empty($additionalParams)) {
-			$request->addParams($additionalParams);
+		if (!empty($event->data['additionalParams'])) {
+			$request->addParams($event->data['additionalParams']);
 		}
-		return $request;
 	}
 
 /**
@@ -196,132 +275,6 @@ class Dispatcher {
  */
 	protected function _loadRoutes() {
 		include APP . 'Config' . DS . 'routes.php';
-	}
-
-/**
- * Outputs cached dispatch view cache
- *
- * @param string $path Requested URL path with any query string parameters
- * @return string|boolean False if is not cached or output
- */
-	public function cached($path) {
-		if (Configure::read('Cache.check') === true) {
-			if ($path == '/') {
-				$path = 'home';
-			}
-			$path = strtolower(Inflector::slug($path));
-
-			$filename = CACHE . 'views' . DS . $path . '.php';
-
-			if (!file_exists($filename)) {
-				$filename = CACHE . 'views' . DS . $path . '_index.php';
-			}
-			if (file_exists($filename)) {
-				$controller = null;
-				$view = new View($controller);
-				return $view->renderCache($filename, microtime(true));
-			}
-		}
-		return false;
-	}
-
-/**
- * Checks if a requested asset exists and sends it to the browser
- *
- * @param string $url Requested URL
- * @param Cake\Network\Response $response The response object to put the file contents in.
- * @return boolean True on success if the asset file was found and sent
- */
-	public function asset($url, Response $response) {
-		if (strpos($url, '..') !== false || strpos($url, '.') === false) {
-			return false;
-		}
-		$filters = Configure::read('Asset.filter');
-		$isCss = (
-			strpos($url, 'ccss/') === 0 ||
-			preg_match('#^(theme/([^/]+)/ccss/)|(([^/]+)(?<!css)/ccss)/#i', $url)
-		);
-		$isJs = (
-			strpos($url, 'cjs/') === 0 ||
-			preg_match('#^/((theme/[^/]+)/cjs/)|(([^/]+)(?<!js)/cjs)/#i', $url)
-		);
-		if (($isCss && empty($filters['css'])) || ($isJs && empty($filters['js']))) {
-			$response->statusCode(404);
-			$response->send();
-			return true;
-		} elseif ($isCss) {
-			include WWW_ROOT . DS . $filters['css'];
-			return true;
-		} elseif ($isJs) {
-			include WWW_ROOT . DS . $filters['js'];
-			return true;
-		}
-		$pathSegments = explode('.', $url);
-		$ext = array_pop($pathSegments);
-		$parts = explode('/', $url);
-		$assetFile = null;
-
-		if ($parts[0] === 'theme') {
-			$themeName = $parts[1];
-			unset($parts[0], $parts[1]);
-			$fileFragment = urldecode(implode(DS, $parts));
-			$path = App::themePath($themeName) . 'webroot' . DS;
-			if (file_exists($path . $fileFragment)) {
-				$assetFile = $path . $fileFragment;
-			}
-		} else {
-			$plugin = Inflector::camelize($parts[0]);
-			if (Plugin::loaded($plugin)) {
-				unset($parts[0]);
-				$fileFragment = urldecode(implode(DS, $parts));
-				$pluginWebroot = Plugin::path($plugin) . 'webroot' . DS;
-				if (file_exists($pluginWebroot . $fileFragment)) {
-					$assetFile = $pluginWebroot . $fileFragment;
-				}
-			}
-		}
-
-		if ($assetFile !== null) {
-			$this->_deliverAsset($response, $assetFile, $ext);
-			return true;
-		}
-		return false;
-	}
-
-/**
- * Sends an asset file to the client
- *
- * @param Cake\Network\Response $response The response object to use.
- * @param string $assetFile Path to the asset file in the file system
- * @param string $ext The extension of the file to determine its mime type
- * @return void
- */
-	protected function _deliverAsset(Response $response, $assetFile, $ext) {
-		ob_start();
-		$compressionEnabled = Configure::read('Asset.compress') && $response->compress();
-		if ($response->type($ext) == $ext) {
-			$contentType = 'application/octet-stream';
-			$agent = env('HTTP_USER_AGENT');
-			if (preg_match('%Opera(/| )([0-9].[0-9]{1,2})%', $agent) || preg_match('/MSIE ([0-9].[0-9]{1,2})/', $agent)) {
-				$contentType = 'application/octetstream';
-			}
-			$response->type($contentType);
-		}
-		if (!$compressionEnabled) {
-			$response->header('Content-Length', filesize($assetFile));
-		}
-		$response->cache(filemtime($assetFile));
-		$response->send();
-		ob_clean();
-		if ($ext === 'css' || $ext === 'js') {
-			include $assetFile;
-		} else {
-			readfile($assetFile);
-		}
-
-		if ($compressionEnabled) {
-			ob_end_flush();
-		}
 	}
 
 }

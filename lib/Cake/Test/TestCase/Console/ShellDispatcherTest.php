@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc.
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc.
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Console
  * @since         CakePHP(tm) v 1.2.0.5432
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -80,7 +80,7 @@ class TestShellDispatcher extends ShellDispatcher {
 /**
  * getShell
  *
- * @param mixed $shell
+ * @param string $shell
  * @return mixed
  */
 	public function getShell($shell) {
@@ -90,7 +90,7 @@ class TestShellDispatcher extends ShellDispatcher {
 /**
  * _getShell
  *
- * @param mixed $plugin
+ * @param string $plugin
  * @return mixed
  */
 	protected function _getShell($shell) {
@@ -442,7 +442,7 @@ class ShellDispatcherTest extends TestCase {
  */
 	public function testDispatchShellWithMain() {
 		$Dispatcher = new TestShellDispatcher();
-		$Mock = $this->getMock('Cake\Console\Shell', array(), array(&$Dispatcher), 'MockWithMainShell');
+		$Mock = $this->getMock('Cake\Console\Shell', array(), array(), 'MockWithMainShell');
 
 		$Mock->expects($this->once())->method('initialize');
 		$Mock->expects($this->once())->method('loadTasks');
@@ -465,9 +465,9 @@ class ShellDispatcherTest extends TestCase {
  */
 	public function testDispatchShellWithoutMain() {
 		$Dispatcher = new TestShellDispatcher();
-		$Shell = $this->getMock('Cake\Console\Shell', array(), array(&$Dispatcher), 'MockWithoutMainShell');
+		$Shell = $this->getMock('Cake\Console\Shell', array(), array(), 'MockWithoutMainShell');
 
-		$Shell = new \MockWithoutMainShell($Dispatcher);
+		$Shell = new MockWithoutMainShell();
 		$this->mockObjects[] = $Shell;
 
 		$Shell->expects($this->once())->method('initialize');

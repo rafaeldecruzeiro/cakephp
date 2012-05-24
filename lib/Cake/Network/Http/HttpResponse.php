@@ -181,7 +181,7 @@ class HttpResponse implements \ArrayAccess {
  * 'body' and 'header' or false on failure.
  *
  * @param string $body A string containing the body to decode.
- * @param mixed $encoding Can be false in case no encoding is being used, or a string representing the encoding.
+ * @param string|boolean $encoding Can be false in case no encoding is being used, or a string representing the encoding.
  * @return mixed Array of response headers and body or false.
  */
 	protected function _decodeBody($body, $encoding = 'chunked') {
@@ -376,7 +376,7 @@ class HttpResponse implements \ArrayAccess {
 /**
  * ArrayAccess - Offset Exists
  *
- * @param mixed $offset
+ * @param string $offset
  * @return boolean
  */
 	public function offsetExists($offset) {
@@ -386,7 +386,7 @@ class HttpResponse implements \ArrayAccess {
 /**
  * ArrayAccess - Offset Get
  *
- * @param mixed $offset
+ * @param string $offset
  * @return mixed
  */
 	public function offsetGet($offset) {
@@ -423,7 +423,7 @@ class HttpResponse implements \ArrayAccess {
 /**
  * ArrayAccess - Offset Set
  *
- * @param mixed $offset
+ * @param string $offset
  * @param mixed $value
  * @return void
  */
@@ -433,7 +433,7 @@ class HttpResponse implements \ArrayAccess {
 /**
  * ArrayAccess - Offset Unset
  *
- * @param mixed $offset
+ * @param string $offset
  * @return void
  */
 	public function offsetUnset($offset) {

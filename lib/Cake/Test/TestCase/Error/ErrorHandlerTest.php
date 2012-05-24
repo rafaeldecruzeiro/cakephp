@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Error
  * @since         CakePHP(tm) v 1.2.0.5432
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -54,6 +54,9 @@ class ErrorHandlerTest extends TestCase {
 		$request->base = '';
 		Router::setRequestInfo($request);
 		Configure::write('debug', 2);
+
+		CakeLog::disable('stdout');
+		CakeLog::disable('stderr');
 	}
 
 /**
@@ -66,6 +69,8 @@ class ErrorHandlerTest extends TestCase {
 		if ($this->_restoreError) {
 			restore_error_handler();
 		}
+		CakeLog::enable('stdout');
+		CakeLog::enable('stderr');
 	}
 
 /**
@@ -227,7 +232,7 @@ class ErrorHandlerTest extends TestCase {
  *
  * @return void
  */
-	public function testLoadPluginHanlder() {
+	public function testLoadPluginHandler() {
 		App::build(array(
 			'Plugin' => array(
 				CAKE . 'Test' . DS . 'TestApp' . DS . 'Plugin' . DS

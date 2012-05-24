@@ -1,6 +1,6 @@
 <?php
 /**
- * CakeRequest Test case file.
+ * Request Test case file.
  *
  * PHP 5
  *

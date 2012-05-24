@@ -148,7 +148,7 @@ class FixtureManager {
 	protected function _setupTable($fixture, $db = null, $drop = true) {
 		if (!$db) {
 			if (!empty($fixture->useDbConfig)) {
-				$db = ClassRegistry::getDataSource($fixture->useDbConfig);
+				$db = ConnectionManager::getDataSource($fixture->useDbConfig);
 			} else {
 				$db = $this->_db;
 			}
@@ -183,6 +183,8 @@ class FixtureManager {
 			return;
 		}
 
+		$nested = $test->db->useNestedTransactions;
+		$test->db->useNestedTransactions = false;
 		$test->db->begin();
 		foreach ($fixtures as $f) {
 			if (!empty($this->_loaded[$f])) {
@@ -193,6 +195,7 @@ class FixtureManager {
 			}
 		}
 		$test->db->commit();
+		$test->db->useNestedTransactions = $nested;
 	}
 
 /**

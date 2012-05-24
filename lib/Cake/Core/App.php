@@ -318,7 +318,7 @@ class App {
  * If reset is set to true, all loaded plugins will be forgotten and they will be needed to be loaded again.
  *
  * @param array $paths associative array with package names as keys and a list of directories for new search paths
- * @param mixed $mode App::RESET will set paths, App::APPEND with append paths, App::PREPEND will prepend paths (default)
+ * @param boolean|string $mode App::RESET will set paths, App::APPEND with append paths, App::PREPEND will prepend paths (default)
  * 	App::REGISTER will register new packages and their paths, %s in path will be replaced by APP path
  * @return void
  * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::build
@@ -468,7 +468,7 @@ class App {
  * are commonly used by version control systems.
  *
  * @param string $type Type of object, i.e. 'Model', 'Controller', 'View/Helper', 'file', 'class' or 'plugin'
- * @param mixed $path Optional Scan only the path given. If null, paths for the chosen type will be used.
+ * @param string|array $path Optional Scan only the path given. If null, paths for the chosen type will be used.
  * @param boolean $cache Set to false to rescan objects of the chosen type. Defaults to true.
  * @return mixed Either false on incorrect / miss.  Or an array of found objects.
  * @link http://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::objects
@@ -761,11 +761,15 @@ class App {
 		}
 
 		list(, $log) = ErrorHandler::mapErrorCode($lastError['type']);
-		if ($log !== LOG_ERROR) {
+		if ($log !== LOG_ERR) {
 			return;
 		}
 
-		$errorHandler = Configure::read('Error.handler');
+		if (PHP_SAPI === 'cli') {
+			$errorHandler = Configure::read('Error.consoleHandler');
+		} else {
+			$errorHandler = Configure::read('Error.handler');
+		}
 		if (!is_callable($errorHandler)) {
 			return;
 		}

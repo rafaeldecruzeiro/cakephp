@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Network.Email
  * @since         CakePHP(tm) v 2.0.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -1273,8 +1273,8 @@ class CakeEmailTest extends TestCase {
 		$this->assertContains($expected, $this->CakeEmail->message(CakeEmail::MESSAGE_TEXT));
 
 		$message = $this->CakeEmail->message();
-		$this->assertContains('Content-Type: text/plain; charset=utf-8', $message);
-		$this->assertContains('Content-Type: text/html; charset=utf-8', $message);
+		$this->assertContains('Content-Type: text/plain; charset=UTF-8', $message);
+		$this->assertContains('Content-Type: text/html; charset=UTF-8', $message);
 
 		// UTF-8 is 8bit
 		$this->assertTrue($this->_checkContentTransferEncoding($message, '8bit'));
@@ -1543,8 +1543,56 @@ class CakeEmailTest extends TestCase {
 
 		$email->to('someone@example.com')->from('someone@example.com');
 		$result = $email->send('ってテーブルを作ってやってたらう');
-		$this->assertContains('Content-Type: text/plain; charset=iso-2022-jp', $result['headers']);
+		$this->assertContains('Content-Type: text/plain; charset=ISO-2022-JP', $result['headers']);
 		$this->assertContains(mb_convert_encoding('ってテーブルを作ってやってたらう','ISO-2022-JP'), $result['message']);
+	}
+
+/**
+ * Tests that the body is encoded using the configured charset (Japanese standard encoding)
+ *
+ * @return void
+ */
+	public function testBodyEncodingIso2022Jp() {
+		$this->skipIf(!function_exists('mb_convert_encoding'));
+		$email = new CakeEmail(array(
+			'charset' => 'iso-2022-jp',
+			'headerCharset' => 'iso-2022-jp',
+			'transport' => 'Debug'
+		));
+		$email->subject('あれ？もしかしての前と');
+		$headers = $email->getHeaders(array('subject'));
+		$expected = "?ISO-2022-JP?B?GyRCJCIkbCEpJGIkNyQrJDckRiROQTAkSBsoQg==?=";
+		$this->assertContains($expected, $headers['Subject']);
+
+		$email->to('someone@example.com')->from('someone@example.com');
+		$result = $email->send('①㈱');
+		$this->assertTextContains("Content-Type: text/plain; charset=ISO-2022-JP", $result['headers']);
+		$this->assertTextNotContains("Content-Type: text/plain; charset=ISO-2022-JP-MS", $result['headers']); // not charset=iso-2022-jp-ms
+		$this->assertTextNotContains(mb_convert_encoding('①㈱','ISO-2022-JP-MS'), $result['message']);
+	}
+
+/**
+ * Tests that the body is encoded using the configured charset (Japanese irregular encoding, but sometime use this)
+ *
+ * @return void
+ */
+	public function testBodyEncodingIso2022JpMs() {
+		$this->skipIf(!function_exists('mb_convert_encoding'));
+		$email = new CakeEmail(array(
+			'charset' => 'iso-2022-jp-ms',
+			'headerCharset' => 'iso-2022-jp-ms',
+			'transport' => 'Debug'
+		));
+		$email->subject('あれ？もしかしての前と');
+		$headers = $email->getHeaders(array('subject'));
+		$expected = "?ISO-2022-JP?B?GyRCJCIkbCEpJGIkNyQrJDckRiROQTAkSBsoQg==?=";
+		$this->assertContains($expected, $headers['Subject']);
+
+		$email->to('someone@example.com')->from('someone@example.com');
+		$result = $email->send('①㈱');
+		$this->assertTextContains("Content-Type: text/plain; charset=ISO-2022-JP", $result['headers']);
+		$this->assertTextNotContains("Content-Type: text/plain; charset=iso-2022-jp-ms", $result['headers']); // not charset=iso-2022-jp-ms
+		$this->assertContains(mb_convert_encoding('①㈱','ISO-2022-JP-MS'), $result['message']);
 	}
 
 	protected function _checkContentTransferEncoding($message, $charset) {

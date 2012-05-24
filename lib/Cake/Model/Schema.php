@@ -340,7 +340,7 @@ class Schema extends Object {
 /**
  * Writes schema file from object or options
  *
- * @param mixed $object schema object or options array
+ * @param array|object $object schema object or options array
  * @param array $options schema object properties to override object
  * @return mixed false or string written to file
  */
@@ -416,12 +416,12 @@ class Schema extends Object {
 					unset($value['type']);
 					$col .= join(', ',  $this->_values($value));
 				} elseif ($field == 'indexes') {
-					$col = "\t\t'indexes' => array(";
+					$col = "\t\t'indexes' => array(\n\t\t\t";
 					$props = array();
 					foreach ((array)$value as $key => $index) {
 						$props[] = "'{$key}' => array(" . join(', ',  $this->_values($index)) . ")";
 					}
-					$col .= join(', ', $props);
+					$col .= join(",\n\t\t\t", $props) . "\n\t\t";
 				} elseif ($field == 'tableParameters') {
 					$col = "\t\t'tableParameters' => array(";
 					$props = array();
@@ -442,8 +442,8 @@ class Schema extends Object {
 /**
  * Compares two sets of schemas
  *
- * @param mixed $old Schema object or array
- * @param mixed $new Schema object or array
+ * @param array|object $old Schema object or array
+ * @param array|object $new Schema object or array
  * @return array Tables (that are added, dropped, or changed)
  */
 	public function compare($old, $new = null) {
@@ -579,6 +579,9 @@ class Schema extends Object {
 					$vals[] = "'{$key}' => array('" . implode("', '",  $val) . "')";
 				} elseif (!is_numeric($key)) {
 					$val = var_export($val, true);
+					if ($val === 'NULL') {
+						$val = 'null';
+					}
 					$vals[] = "'{$key}' => {$val}";
 				}
 			}

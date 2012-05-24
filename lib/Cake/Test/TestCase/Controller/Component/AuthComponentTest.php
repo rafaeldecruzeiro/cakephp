@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Controller.Component
  * @since         CakePHP(tm) v 1.2.0.5347
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -657,7 +657,7 @@ class AuthComponentTest extends TestCase {
 		putenv('HTTP_REFERER=');
 
 		$url = '/party/on';
-		$this->Auth->request = $CakeRequest = new CakeRequest($url);
+		$this->Auth->request = $Request = new Request($url);
 		$this->Auth->request->addParams(Router::parse($url));
 		$this->Auth->authorize = array('Controller');
 		$this->Auth->login(array('username' => 'mariano', 'password' => 'cake'));
@@ -669,7 +669,7 @@ class AuthComponentTest extends TestCase {
 		$Controller = $this->getMock(
 			'Controller',
 			array('on', 'redirect'),
-			array($CakeRequest, $response)
+			array($Request, $response)
 		);
 
 		$expected = Router::url($this->Auth->loginRedirect, true);

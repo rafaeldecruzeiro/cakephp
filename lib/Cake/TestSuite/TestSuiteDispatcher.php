@@ -4,7 +4,7 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
@@ -248,6 +248,7 @@ class TestSuiteDispatcher {
 		restore_error_handler();
 
 		try {
+			self::time();
 			$command = new TestSuiteCommand('Cake\TestSuite\TestLoader', $commandArgs);
 			$result = $command->run($options);
 		} catch (Error\MissingConnectionException $exception) {
@@ -256,6 +257,31 @@ class TestSuiteDispatcher {
 			include CAKE . 'TestSuite' . DS . 'templates' . DS . 'missing_connection.php';
 			exit();
 		}
+	}
+
+/**
+ * Sets a static timestamp
+ *
+ * @param boolean $reset to set new static timestamp.
+ * @return integer timestamp
+ */
+	public static function time($reset = false) {
+		static $now;
+		if ($reset || !$now) {
+			$now = time();
+		}
+		return $now;
+	}
+
+/**
+ * Returns formatted date string using static time
+ * This method is being used as formatter for created, modified and updated fields in Model::save()
+ *
+ * @param string $format format to be used.
+ * @return string formatted date
+ */
+	public static function date($format) {
+		return date($format, self::time());
 	}
 
 }

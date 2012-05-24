@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc.
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc.
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.View.Helper
  * @since         CakePHP(tm) v 1.2.0.4206
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -1267,33 +1267,6 @@ class HtmlHelperTest extends TestCase {
 		$this->assertTags($result, $expected);
 
 		$result = $this->Html->nestedList($list, null);
-		$expected = array(
-			'<ul',
-			'<li', 'Item 1', '/li',
-			'<li', 'Item 2',
-			'<ul', '<li', 'Item 2.1', '/li', '/ul',
-			'/li',
-			'<li', 'Item 3', '/li',
-			'<li', 'Item 4',
-			'<ul',
-			'<li', 'Item 4.1', '/li',
-			'<li', 'Item 4.2', '/li',
-			'<li', 'Item 4.3',
-			'<ul',
-			'<li', 'Item 4.3.1', '/li',
-			'<li', 'Item 4.3.2', '/li',
-			'/ul',
-			'/li',
-			'/ul',
-			'/li',
-			'<li', 'Item 5',
-			'<ul',
-			'<li', 'Item 5.1', '/li',
-			'<li', 'Item 5.2', '/li',
-			'/ul',
-			'/li',
-			'/ul'
-		);
 		$this->assertTags($result, $expected);
 
 		$result = $this->Html->nestedList($list, array(), array(), 'ol');
@@ -1327,33 +1300,6 @@ class HtmlHelperTest extends TestCase {
 		$this->assertTags($result, $expected);
 
 		$result = $this->Html->nestedList($list, 'ol');
-		$expected = array(
-			'<ol',
-			'<li', 'Item 1', '/li',
-			'<li', 'Item 2',
-			'<ol', '<li', 'Item 2.1', '/li', '/ol',
-			'/li',
-			'<li', 'Item 3', '/li',
-			'<li', 'Item 4',
-			'<ol',
-			'<li', 'Item 4.1', '/li',
-			'<li', 'Item 4.2', '/li',
-			'<li', 'Item 4.3',
-			'<ol',
-			'<li', 'Item 4.3.1', '/li',
-			'<li', 'Item 4.3.2', '/li',
-			'/ol',
-			'/li',
-			'/ol',
-			'/li',
-			'<li', 'Item 5',
-			'<ol',
-			'<li', 'Item 5.1', '/li',
-			'<li', 'Item 5.2', '/li',
-			'/ol',
-			'/li',
-			'/ol'
-		);
 		$this->assertTags($result, $expected);
 
 		$result = $this->Html->nestedList($list, array('class' => 'list'));

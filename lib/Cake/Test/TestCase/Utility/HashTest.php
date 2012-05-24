@@ -1198,7 +1198,7 @@ class HashTest extends TestCase {
 		$expected = array(
 			'Some' => array(
 				'string' => array(
-					'value' => array( 'values')
+					'value' => array('values')
 				)
 			)
 		);

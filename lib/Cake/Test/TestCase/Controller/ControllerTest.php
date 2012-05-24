@@ -104,7 +104,7 @@ class ControllerPost extends TestModel {
 /**
  * find method
  *
- * @param mixed $type
+ * @param string $type
  * @param array $options
  * @return void
  */
@@ -394,7 +394,7 @@ class AnotherTestController extends ControllerTestAppController {
 
 /**
  * merge parent
- * 
+ *
  * @var string
  */
 	protected $_mergeParent = 'ControllerTestAppController';
@@ -733,7 +733,8 @@ class ControllerTest extends TestCase {
 			array(303, "See Other"),
 			array(304, "Not Modified"),
 			array(305, "Use Proxy"),
-			array(307, "Temporary Redirect")
+			array(307, "Temporary Redirect"),
+			array(403, "Forbidden"),
 		);
 	}
 

@@ -88,7 +88,7 @@ if (isset($filePresent)):
 		endif;
 	?>
 </p>
-<?php endif;?>
+<?php endif; ?>
 <?php
 	if (!Validation::alphaNumeric('cakephp')) {
 		echo '<p><span class="notice">';

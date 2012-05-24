@@ -4,14 +4,14 @@
  *
  * PHP 5
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
  * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Model
  * @since         CakePHP(tm) v 1.2.0.4206
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -320,8 +320,8 @@ class ModelReadTest extends BaseModelTest {
 		$result = $Article->query($query, $params, false);
 		$this->assertTrue(is_array($result));
 		$this->assertTrue(
-			   isset($result[0][$this->db->fullTableName('articles', false, false)])
-			|| isset($result[0][0])
+			isset($result[0][$this->db->fullTableName('articles', false, false)]) ||
+			isset($result[0][0])
 		);
 		$result = $this->db->getQueryCache($query, $params);
 		$this->assertTrue(empty($result));
@@ -334,8 +334,8 @@ class ModelReadTest extends BaseModelTest {
 		$result = $Article->query($query, $params);
 		$this->assertTrue(is_array($result));
 		$this->assertTrue(
-			   isset($result[0][$this->db->fullTableName('articles', false, false)]['title'])
-			|| isset($result[0][0]['title'])
+			isset($result[0][$this->db->fullTableName('articles', false, false)]['title']) ||
+			isset($result[0][0]['title'])
 		);
 
 		//related to ticket #5035
@@ -7868,7 +7868,7 @@ class ModelReadTest extends BaseModelTest {
 		$Article = new CustomArticle();
 		$data = array('user_id' => 3, 'title' => 'Fourth Article', 'body' => 'Article Body, unpublished', 'published' => 'N');
 		$Article->create($data);
-		$Article->save();
+		$Article->save(null, false);
 		$this->assertEquals(4, $Article->id);
 
 		$result = $Article->find('published');

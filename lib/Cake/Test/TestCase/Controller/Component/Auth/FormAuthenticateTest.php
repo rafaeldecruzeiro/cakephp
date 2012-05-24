@@ -168,7 +168,6 @@ class FormAuthenticateTest extends TestCase {
 		), App::RESET);
 		Plugin::load('TestPlugin');
 
-		$ts = date('Y-m-d H:i:s');
 		$PluginModel = ClassRegistry::init('TestPlugin.TestPluginAuthUser');
 		$user['id'] = 1;
 		$user['username'] = 'gwoo';
@@ -190,7 +189,7 @@ class FormAuthenticateTest extends TestCase {
 			'username' => 'gwoo',
 			'created' => '2007-03-17 01:16:23'
 		);
-		$this->assertTrue($result['updated'] >= $ts);
+		$this->assertEquals(self::date(), $result['updated']);
 		unset($result['updated']);
 		$this->assertEquals($expected, $result);
 		Plugin::unload();

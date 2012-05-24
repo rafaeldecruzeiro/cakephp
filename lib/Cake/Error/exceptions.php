@@ -12,7 +12,7 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html
  * @package       Cake.Error
  * @since         CakePHP(tm) v 2.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -190,7 +190,7 @@ class Exception extends \RuntimeException {
  * Allows you to create exceptions that are treated as framework errors and disabled
  * when debug = 0.
  *
- * @param mixed $message Either the string of the error message, or an array of attributes
+ * @param string|array $message Either the string of the error message, or an array of attributes
  *   that are made available in the view, and sprintf()'d into Exception::$_messageTemplate
  * @param string $code The code of the error, is also the HTTP status code for the error.
  */
@@ -438,6 +438,17 @@ class MissingPluginException extends Exception {
 }
 
 /**
+ * Exception raised when a Dispatcher filter could not be found
+ *
+ * @package       Cake.Error
+ */
+class MissingDispatcherFilterException extends Exception {
+
+	protected $_messageTemplate = 'Dispatcher filter %s could not be found.';
+
+}
+
+/**
  * Exception class for AclComponent and Interface implementations. 
  *
  * @package       Cake.Error
@@ -540,6 +551,21 @@ class FatalErrorException extends Exception {
 		if ($line) {
 			$this->line = $line;
 		}
+	}
+
+}
+
+/**
+ * Not Implemented Exception - used when an API method is not implemented
+ *
+ * @package       Cake.Error
+ */
+class NotImplementedException extends Exception {
+
+	protected $_messageTemplate = '%s is not implemented.';
+
+	public function __construct($message, $code = 501) {
+		parent::__construct($message, $code);
 	}
 
 }

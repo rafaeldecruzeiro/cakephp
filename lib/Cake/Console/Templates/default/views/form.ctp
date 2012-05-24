@@ -17,8 +17,8 @@
  */
 use Cake\Utility\Inflector;
 ?>
-<div class="<?php echo $pluralVar;?> form">
-<?php echo "<?php echo \$this->Form->create('{$modelClass}');?>\n";?>
+<div class="<?php echo $pluralVar; ?> form">
+<?php echo "<?php echo \$this->Form->create('{$modelClass}'); ?>\n"; ?>
 	<fieldset>
 		<legend><?php printf("<?php echo __('%s %s'); ?>", Inflector::humanize($action), $singularHumanName); ?></legend>
 <?php
@@ -39,7 +39,7 @@ use Cake\Utility\Inflector;
 ?>
 	</fieldset>
 <?php
-	echo "<?php echo \$this->Form->end(__('Submit'));?>\n";
+	echo "<?php echo \$this->Form->end(__('Submit')); ?>\n";
 ?>
 </div>
 <div class="actions">
@@ -47,9 +47,9 @@ use Cake\Utility\Inflector;
 	<ul>
 
 <?php if (strpos($action, 'add') === false): ?>
-		<li><?php echo "<?php echo \$this->Form->postLink(__('Delete'), array('action' => 'delete', \$this->Form->value('{$modelClass}.{$primaryKey}')), null, __('Are you sure you want to delete # %s?', \$this->Form->value('{$modelClass}.{$primaryKey}'))); ?>";?></li>
-<?php endif;?>
-		<li><?php echo "<?php echo \$this->Html->link(__('List " . $pluralHumanName . "'), array('action' => 'index'));?>";?></li>
+		<li><?php echo "<?php echo \$this->Form->postLink(__('Delete'), array('action' => 'delete', \$this->Form->value('{$modelClass}.{$primaryKey}')), null, __('Are you sure you want to delete # %s?', \$this->Form->value('{$modelClass}.{$primaryKey}'))); ?>"; ?></li>
+<?php endif; ?>
+		<li><?php echo "<?php echo \$this->Html->link(__('List " . $pluralHumanName . "'), array('action' => 'index')); ?>"; ?></li>
 <?php
 		$done = array();
 		foreach ($associations as $type => $data) {

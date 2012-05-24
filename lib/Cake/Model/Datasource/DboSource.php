@@ -78,6 +78,15 @@ class DboSource extends DataSource {
 	public $cacheMethods = true;
 
 /**
+ * Flag to support nested transactions. If it is set to false, you will be able to use
+ * the transaction methods (begin/commit/rollback), but just the global transaction will
+ * be executed.
+ *
+ * @var boolean
+ */
+	public $useNestedTransactions = false;
+
+/**
  * Print full query debug info?
  *
  * @var boolean
@@ -192,17 +201,6 @@ class DboSource extends DataSource {
 	protected $_transactionNesting = 0;
 
 /**
- * Index of basic SQL commands
- *
- * @var array
- */
-	protected $_commands = array(
-		'begin' => 'BEGIN',
-		'commit' => 'COMMIT',
-		'rollback' => 'ROLLBACK'
-	);
-
-/**
  * Default fields that are used by the DBO
  *
  * @var array
@@ -302,10 +300,19 @@ class DboSource extends DataSource {
 /**
  * Get the underlying connection object.
  *
- * @return PDOConnection
+ * @return PDO
  */
 	public function getConnection() {
 		return $this->_connection;
+	}
+
+/**
+ * Gets the version string of the database server
+ *
+ * @return string The database version
+ */
+	public function getVersion() {
+		return $this->_connection->getAttribute(PDO::ATTR_SERVER_VERSION);
 	}
 
 /**
@@ -938,7 +945,7 @@ class DboSource extends DataSource {
 /**
  * Gets full table name including prefix
  *
- * @param mixed $model Either a Model object or a string table name.
+ * @param Model|string $model Either a Model object or a string table name.
  * @param boolean $quote Whether you want the table name quoted.
  * @param boolean $schema Whether you want the schema name included.
  * @return string Full quoted table name
@@ -2020,11 +2027,20 @@ class DboSource extends DataSource {
  * Deletes all the records in a table and resets the count of the auto-incrementing
  * primary key, where applicable.
  *
- * @param mixed $table A string or model class representing the table to be truncated
+ * @param Model|string $table A string or model class representing the table to be truncated
  * @return boolean	SQL TRUNCATE TABLE statement, false if not applicable.
  */
 	public function truncate($table) {
 		return $this->execute('TRUNCATE TABLE ' . $this->fullTableName($table));
+	}
+
+/**
+ * Check if the server support nested transactions
+ *
+ * @return boolean
+ */
+	public function nestedTransactionSupported() {
+		return false;
 	}
 
 /**
@@ -2035,15 +2051,33 @@ class DboSource extends DataSource {
  * or a transaction has not started).
  */
 	public function begin() {
-		if ($this->_transactionStarted || $this->_connection->beginTransaction()) {
-			if ($this->fullDebug && empty($this->_transactionNesting)) {
-				$this->logQuery('BEGIN');
+		if ($this->_transactionStarted) {
+			if ($this->nestedTransactionSupported()) {
+				return $this->_beginNested();
 			}
-			$this->_transactionStarted = true;
 			$this->_transactionNesting++;
-			return true;
+			return $this->_transactionStarted;
 		}
-		return false;
+
+		$this->_transactionNesting = 0;
+		if ($this->fullDebug) {
+			$this->logQuery('BEGIN');
+		}
+		return $this->_transactionStarted = $this->_connection->beginTransaction();
+	}
+
+/**
+ * Begin a nested transaction
+ *
+ * @return boolean
+ */
+	protected function _beginNested() {
+		$query = 'SAVEPOINT LEVEL' . ++$this->_transactionNesting;
+		if ($this->fullDebug) {
+			$this->logQuery($query);
+		}
+		$this->_connection->exec($query);
+		return true;
 	}
 
 /**
@@ -2054,19 +2088,38 @@ class DboSource extends DataSource {
  * or a transaction has not started).
  */
 	public function commit() {
-		if ($this->_transactionStarted) {
-			$this->_transactionNesting--;
-			if ($this->_transactionNesting <= 0) {
-				$this->_transactionStarted = false;
-				$this->_transactionNesting = 0;
-				if ($this->fullDebug) {
-					$this->logQuery('COMMIT');
-				}
-				return $this->_connection->commit();
-			}
-			return true;
+		if (!$this->_transactionStarted) {
+			return false;
 		}
-		return false;
+
+		if ($this->_transactionNesting === 0) {
+			if ($this->fullDebug) {
+				$this->logQuery('COMMIT');
+			}
+			$this->_transactionStarted = false;
+			return $this->_connection->commit();
+		}
+
+		if ($this->nestedTransactionSupported()) {
+			return $this->_commitNested();
+		}
+
+		$this->_transactionNesting--;
+		return true;
+	}
+
+/**
+ * Commit a nested transaction
+ *
+ * @return boolean
+ */
+	protected function _commitNested() {
+		$query = 'RELEASE SAVEPOINT LEVEL' . $this->_transactionNesting--;
+		if ($this->fullDebug) {
+			$this->logQuery($query);
+		}
+		$this->_connection->exec($query);
+		return true;
 	}
 
 /**
@@ -2077,15 +2130,38 @@ class DboSource extends DataSource {
  * or a transaction has not started).
  */
 	public function rollback() {
-		if ($this->_transactionStarted && $this->_connection->rollBack()) {
+		if (!$this->_transactionStarted) {
+			return false;
+		}
+
+		if ($this->_transactionNesting === 0) {
 			if ($this->fullDebug) {
 				$this->logQuery('ROLLBACK');
 			}
 			$this->_transactionStarted = false;
-			$this->_transactionNesting = 0;
-			return true;
+			return $this->_connection->rollBack();
 		}
-		return false;
+
+		if ($this->nestedTransactionSupported()) {
+			return $this->_rollbackNested();
+		}
+
+		$this->_transactionNesting--;
+		return true;
+	}
+
+/**
+ * Rollback a nested transaction
+ *
+ * @return boolean
+ */
+	protected function _rollbackNested() {
+		$query = 'ROLLBACK TO SAVEPOINT LEVEL' . $this->_transactionNesting--;
+		if ($this->fullDebug) {
+			$this->logQuery($query);
+		}
+		$this->_connection->exec($query);
+		return true;
 	}
 
 /**
@@ -2104,7 +2180,7 @@ class DboSource extends DataSource {
  * were provided either null or false will be returned based on what was input.
  *
  * @param Model $model
- * @param mixed $conditions Array of conditions, conditions string, null or false. If an array of conditions,
+ * @param string|array|boolean $conditions Array of conditions, conditions string, null or false. If an array of conditions,
  *   or string conditions those conditions will be returned.  With other values the model's existence will be checked.
  *   If the model doesn't exist a null or false will be returned depending on the input value.
  * @param boolean $useAlias Use model aliases rather than table names when generating conditions
@@ -2165,7 +2241,7 @@ class DboSource extends DataSource {
  *
  * @param Model $model
  * @param string $alias Alias table name
- * @param mixed $fields virtual fields to be used on query
+ * @param array $fields virtual fields to be used on query
  * @return array
  */
 	protected function _constructVirtualFields(Model $model, $alias, $fields) {
